@@ -18,7 +18,7 @@ var testData = [][]string{
 	},
 	{
 		"CREATE TABLE information (id BIGINT(11) PRIMARY KEY AUTO_INCREMENT);",
-		"ID int64 `gorm:\"column:id;primary_key;AUTO_INCREMENT\"`", "",
+		"ID int64 `gorm:\"column:id;primaryKey;AUTO_INCREMENT\"`", "",
 	},
 	{
 		"CREATE TABLE information (user_ip varchar(20));",

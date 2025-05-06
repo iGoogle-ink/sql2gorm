@@ -2,11 +2,11 @@ package parser
 
 import (
 	"fmt"
+	"github.com/blastrain/vitess-sqlparser/tidbparser/ast"
+	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/mysql"
+	"github.com/blastrain/vitess-sqlparser/tidbparser/dependency/types"
+	"github.com/blastrain/vitess-sqlparser/tidbparser/parser"
 	"github.com/jinzhu/inflection"
-	"github.com/knocknote/vitess-sqlparser/tidbparser/ast"
-	"github.com/knocknote/vitess-sqlparser/tidbparser/dependency/mysql"
-	"github.com/knocknote/vitess-sqlparser/tidbparser/dependency/types"
-	"github.com/knocknote/vitess-sqlparser/tidbparser/parser"
 	"github.com/pkg/errors"
 	"go/format"
 	"io"
@@ -159,7 +159,7 @@ func makeCode(stmt *ast.CreateTableStmt, opt options) (string, []string, error) 
 			gormTag.WriteString(col.Tp.InfoSchemaStr())
 		}
 		if isPrimaryKey[colName] {
-			gormTag.WriteString(";primary_key")
+			gormTag.WriteString(";primaryKey")
 		}
 		isNotNull := false
 		canNull := false
@@ -167,13 +167,13 @@ func makeCode(stmt *ast.CreateTableStmt, opt options) (string, []string, error) 
 			switch o.Tp {
 			case ast.ColumnOptionPrimaryKey:
 				if !isPrimaryKey[colName] {
-					gormTag.WriteString(";primary_key")
+					gormTag.WriteString(";primaryKey")
 					isPrimaryKey[colName] = true
 				}
 			case ast.ColumnOptionNotNull:
 				isNotNull = true
 			case ast.ColumnOptionAutoIncrement:
-				gormTag.WriteString(";AUTO_INCREMENT")
+				gormTag.WriteString(";autoIncrement")
 			case ast.ColumnOptionDefaultValue:
 				if value := getDefaultValue(o.Expr); value != "" {
 					gormTag.WriteString(";default:")
@@ -185,6 +185,7 @@ func makeCode(stmt *ast.CreateTableStmt, opt options) (string, []string, error) 
 				//gormTag.WriteString(";NULL")
 				canNull = true
 			case ast.ColumnOptionOnUpdate: // For Timestamp and Datetime only.
+
 			case ast.ColumnOptionFulltext:
 			case ast.ColumnOptionComment:
 				field.Comment = o.Expr.GetDatum().GetString()
@@ -193,7 +194,7 @@ func makeCode(stmt *ast.CreateTableStmt, opt options) (string, []string, error) 
 			}
 		}
 		if !isPrimaryKey[colName] && isNotNull {
-			gormTag.WriteString(";NOT NULL")
+			gormTag.WriteString(";not null")
 		}
 		tags = append(tags, "gorm", gormTag.String())
 
